@@ -22,21 +22,28 @@ const Wrapper = styled.div`
   text-align: ${props => props.textAlign || 'left'};
   margin: 16px auto;
   outline: none;
-  width: 50rem;
+  max-width: 50rem;
   position: relative;
 `;
 
 const TimerWrapper = styled.div`
   display: inline-block;
   margin-right: 8px;
+  margin-bottom: 16px;
   text-align: left;
   vertical-align: top;
-`
+`;
 
 const TimeStampWrapper = styled(Wrapper)`
   cursor: text;
   margin: 0;
   width: auto;
+`;
+
+const StylishQRCode = styled(QRCode)`
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const Button = styled.button`
@@ -52,8 +59,12 @@ const Button = styled.button`
 `;
 
 const Number = styled(Typography)`
-  font-size: 64px;
+  font-size: 48px;
   color: ${props => (props.focused ? '#888' : 'black')};
+
+  @media only screen and (min-width: 600px) {
+    font-size: 64px;
+  }
 `;
 
 const TimeUnit = styled(Number)`
@@ -335,7 +346,7 @@ class Timer extends React.Component {
               </TimeStampWrapper>
               <Typography>Timer ID: {id}</Typography>
             </TimerWrapper>
-            <QRCode value={`https://benvardy.co.uk?id=${id}`} />
+            <StylishQRCode value={`https://benvardy.co.uk?id=${id}`} />
           </>
         ) : (
           <Wrapper>
