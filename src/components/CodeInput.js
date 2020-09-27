@@ -7,6 +7,7 @@ const Input = styled.input`
   outline: none;
   border-bottom: 2px solid #888;
   font-size: 16px;
+  transition: 0.25s ease-in-out;
 `;
 
 const CodeInput = props => {

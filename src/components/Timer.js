@@ -32,7 +32,7 @@ const TimerWrapper = styled(Wrapper)`
 `;
 
 const Button = styled.button`
-  border: 1px solid black;
+  border: 1px solid #888888;
   border-radius: 8px;
   background-color: transparent;
   cursor: pointer;
@@ -328,7 +328,7 @@ class Timer extends React.Component {
           </div>
         ) : (
           <Wrapper>
-            <Typography size="32px">Create A new Timer:</Typography>
+            <Typography size="32px">Create a new Timer:</Typography>
             <Wrapper textAlign="center">
               <Button onClick={this.createTimer}>Create Timer</Button>
             </Wrapper>
