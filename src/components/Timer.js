@@ -18,11 +18,11 @@ dayjs.extend(utc);
 const serverRoot = 'http://localhost:3001';
 
 const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
+  /* text-align:; */
+  margin: 16px auto;
   outline: none;
+  width: 25rem;
+  position: relative;
 `;
 
 const TimerWrapper = styled(Wrapper)`
@@ -34,10 +34,15 @@ const Button = styled.button`
   border-radius: 8px;
   background-color: transparent;
   cursor: pointer;
+  color: #888;
   font-size: 16px;
   font-family: 'Roboto';
   outline: none;
-  padding: 16px 16px;
+  padding: 8px 16px;
+`;
+
+const Centered = styled(Wrapper)`
+  text-align: center;
 `;
 
 const Number = styled(Typography)`
@@ -207,7 +212,7 @@ class Timer extends React.Component {
   createTimer() {
     const {token} = this.state;
 
-    fetch(`${serverRoot}/`, {
+    fetch(serverRoot, {
       headers: {
         Accept: 'application/json',
       },
@@ -238,7 +243,7 @@ class Timer extends React.Component {
       end: end.unix(),
     };
 
-    fetch(`${serverRoot}/`, {
+    fetch(serverRoot, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -323,10 +328,16 @@ class Timer extends React.Component {
             <Typography>Timer ID: {id}</Typography>
           </div>
         ) : (
-          <div>
-            <Button onClick={this.createTimer}>Create Timer</Button>
-            <CodeInput handleSubmit={this.handleCodeSubmit}></CodeInput>
-          </div>
+          <>
+            <Typography size="32px">Create A new Timer:</Typography>
+            <Centered>
+              <Button onClick={this.createTimer}>Create Timer</Button>
+            </Centered>
+            <Typography size="32px">Or Enter a Timer Code:</Typography>
+            <Centered>
+              <CodeInput handleSubmit={this.handleCodeSubmit}></CodeInput>
+            </Centered>
+          </>
         )}
       </Wrapper>
     );
