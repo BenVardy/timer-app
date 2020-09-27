@@ -47,7 +47,7 @@ const Centered = styled(Wrapper)`
 
 const Number = styled(Typography)`
   font-size: 26px;
-  color: ${props => (props.focused ? 'lightgrey' : 'black')};
+  color: ${props => (props.focused ? '#888' : 'black')};
 `;
 
 const TimeUnit = styled(Number)`
