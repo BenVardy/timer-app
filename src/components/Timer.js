@@ -18,7 +18,7 @@ dayjs.extend(utc);
 const serverRoot = 'http://localhost:3001';
 
 const Wrapper = styled.div`
-  /* text-align:; */
+  text-align: ${props => props.textAlign || 'left'};
   margin: 16px auto;
   outline: none;
   width: 25rem;
@@ -27,6 +27,8 @@ const Wrapper = styled.div`
 
 const TimerWrapper = styled(Wrapper)`
   cursor: text;
+  margin: 0;
+  width: auto;
 `;
 
 const Button = styled.button`
@@ -312,11 +314,11 @@ class Timer extends React.Component {
     let { id, number, loading, focused } = this.state;
 
     return (
-      <Wrapper>
+      <Wrapper textAlign="center">
         {loading ? (
           <ClipLoader></ClipLoader>
         ) : id !== null ? (
-          <div>
+          <div style={{'display': 'inline-block', textAlign: 'left'}}>
             <TimerWrapper
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
@@ -328,16 +330,16 @@ class Timer extends React.Component {
             <Typography>Timer ID: {id}</Typography>
           </div>
         ) : (
-          <>
+          <Wrapper>
             <Typography size="32px">Create A new Timer:</Typography>
-            <Centered>
+            <Wrapper textAlign="center">
               <Button onClick={this.createTimer}>Create Timer</Button>
-            </Centered>
+            </Wrapper>
             <Typography size="32px">Or Enter a Timer Code:</Typography>
-            <Centered>
+            <Wrapper textAlign="center">
               <CodeInput handleSubmit={this.handleCodeSubmit}></CodeInput>
-            </Centered>
-          </>
+            </Wrapper>
+          </Wrapper>
         )}
       </Wrapper>
     );
