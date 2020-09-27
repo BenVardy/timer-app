@@ -109,6 +109,7 @@ class Timer extends React.Component {
 
   handleFocus() {
     const { token, timerToken, interval } = this.state;
+    prompt();
     if (token === timerToken) {
       clearInterval(interval);
 
