@@ -168,6 +168,7 @@ class Timer extends React.Component {
 
   handleCodeSubmit(id) {
     this.fetchTimer(id);
+    history.push(`/?id=${id}`);
     this.setState({ id, loading: true });
   }
 
@@ -226,7 +227,7 @@ class Timer extends React.Component {
       .then(json => {
         const { id } = json;
 
-        history.replace(`/?id=${id}`);
+        history.push(`/?id=${id}`);
         this.setState({ id, timerToken: token });
       });
   }
