@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 import { ClipLoader } from 'react-spinners';
+import QRCode from 'qrcode.react';
 
 import CodeInput from './CodeInput';
 import Typography from './Typography';
@@ -21,11 +22,18 @@ const Wrapper = styled.div`
   text-align: ${props => props.textAlign || 'left'};
   margin: 16px auto;
   outline: none;
-  width: 25rem;
+  width: 50rem;
   position: relative;
 `;
 
-const TimerWrapper = styled(Wrapper)`
+const TimerWrapper = styled.div`
+  display: inline-block;
+  margin-right: 8px;
+  text-align: left;
+  vertical-align: top;
+`
+
+const TimeStampWrapper = styled(Wrapper)`
   cursor: text;
   margin: 0;
   width: auto;
@@ -44,14 +52,14 @@ const Button = styled.button`
 `;
 
 const Number = styled(Typography)`
-  font-size: 26px;
+  font-size: 64px;
   color: ${props => (props.focused ? '#888' : 'black')};
 `;
 
 const TimeUnit = styled(Number)`
   border-left: ${props => (props.displayCursor && props.focused ? '1px' : '0')}
     solid lightgrey;
-  margin-right: 4px;
+  margin-right: 8px;
 `;
 
 class Timer extends React.Component {
@@ -315,17 +323,20 @@ class Timer extends React.Component {
         {loading ? (
           <ClipLoader></ClipLoader>
         ) : id !== null ? (
-          <div style={{'display': 'inline-block', textAlign: 'left'}}>
-            <TimerWrapper
-              onFocus={this.handleFocus}
-              onBlur={this.handleBlur}
-              tabIndex="0"
-              onKeyPress={this.handleKeyPress}
-            >
-              {this.createDisplay(number, focused)}
+          <>
+            <TimerWrapper>
+              <TimeStampWrapper
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+                tabIndex="0"
+                onKeyPress={this.handleKeyPress}
+                >
+                {this.createDisplay(number, focused)}
+              </TimeStampWrapper>
+              <Typography>Timer ID: {id}</Typography>
             </TimerWrapper>
-            <Typography>Timer ID: {id}</Typography>
-          </div>
+            <QRCode value={`https://benvardy.co.uk?id=${id}`} />
+          </>
         ) : (
           <Wrapper>
             <Typography size="32px">Create a new Timer:</Typography>
