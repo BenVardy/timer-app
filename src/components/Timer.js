@@ -292,7 +292,7 @@ class Timer extends React.Component {
 
         this.setState(newState);
       }
-    }, 100);
+    }, 10);
   }
 
   formatNumber(n) {
