@@ -1,0 +1,334 @@
+import React from 'react';
+import styled from 'styled-components';
+import { withCookies, Cookies } from 'react-cookie';
+import { instanceOf } from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
+import history from 'history/browser';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+import { ClipLoader } from 'react-spinners';
+
+import CodeInput from './CodeInput';
+import Typography from './Typography';
+
+dayjs.extend(utc);
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  outline: none;
+`;
+
+const TimerWrapper = styled(Wrapper)`
+  cursor: text;
+`;
+
+const Button = styled.button`
+  border: 1px solid black;
+  border-radius: 8px;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Roboto';
+  outline: none;
+  padding: 16px 16px;
+`;
+
+const Number = styled(Typography)`
+  font-size: 26px;
+  color: ${props => (props.focused ? 'lightgrey' : 'black')};
+`;
+
+const TimeUnit = styled(Number)`
+  border-left: ${props => (props.displayCursor && props.focused ? '1px' : '0')}
+    solid lightgrey;
+  margin-right: 4px;
+`;
+
+class Timer extends React.Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired,
+  };
+
+  constructor(props) {
+    super();
+    /** @type {Cookies} */
+    const cookies = props.cookies;
+
+    let urlParams = new URLSearchParams(window.location.search.substring(1));
+    let id = urlParams.get('id');
+
+    let token = cookies.get('token');
+    if (!token) {
+      token = uuidv4();
+      cookies.set('token', token);
+    }
+
+    this.state = {
+      id,
+      token,
+      timerToken: null,
+      loading: id !== null,
+      number: 0,
+      end: null,
+      newTimeStamp: '',
+      focused: false,
+      interval: null,
+    };
+
+    this.createTimer = this.createTimer.bind(this);
+
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+
+    this.handleCodeSubmit = this.handleCodeSubmit.bind(this);
+
+    this.timerInterval = this.timerInterval.bind(this);
+  }
+
+  componentDidMount() {
+    // Get times from API
+    const { id } = this.state;
+
+    if (id) this.fetchTimer(id);
+  }
+
+  handleFocus() {
+    const { token, timerToken, interval } = this.state;
+    if (token === timerToken) {
+      clearInterval(interval);
+
+      this.setState({
+        interval: null,
+        focused: true,
+      });
+    }
+  }
+
+  handleBlur() {
+    let { id, number, interval } = this.state;
+    let newState = {
+      focused: false
+    };
+
+    if (!interval && number > 0) {
+      interval = this.timerInterval();
+      // Call api to update/set here
+      this.updateTimer(id, number);
+
+      let end = dayjs.utc().add(number, 's').unix();
+
+      Object.assign(newState, {
+        interval,
+        end,
+        newTimeStamp: '',
+      });
+    }
+
+    this.setState(newState);
+  }
+
+  handleKeyPress(e) {
+    let { newTimeStamp, focused } = this.state;
+    // Only allow edit if focused
+    if (!focused) return;
+
+    const { key } = e;
+    if (key.match(/enter/i)) {
+      e.target.tabIndex = 0;
+      return this.handleBlur();
+    }
+    if (!key.match(/\d/)) return;
+    // If we've filled it up
+    if (newTimeStamp.length === 6) newTimeStamp = '';
+
+    newTimeStamp += key;
+
+    let date = dayjs.utc(
+      '1970-01-01 ' + newTimeStamp.padStart(6, '0'),
+      'YYYY-MM-DD HHmmss'
+    );
+
+    let number = date.unix();
+    this.setState({
+      number,
+      newTimeStamp,
+    });
+  }
+
+  handleCodeSubmit(id) {
+    this.fetchTimer(id);
+    this.setState({ id, loading: true });
+  }
+
+  fetchTimer(id) {
+    fetch(`http://localhost:3001?id=${id}`, {
+        headers: { Accept: 'application/json' },
+      })
+        .then(res => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            throw res.json();
+          }
+        })
+        .then(json => {
+          let { token: timerToken, end } = json;
+          let start = dayjs.utc().unix();
+          let number = Math.max(0, end - start);
+          let interval = number > 0 ? this.timerInterval() : null;
+
+          return {
+            number,
+            timerToken,
+            end,
+            totalTs: this.formatNumber(number),
+            interval,
+          };
+        })
+        .catch(err => {
+          err.then(({ error }) => console.error(error));
+          return {
+            id: null,
+          };
+        })
+        .then(newState => {
+          this.setState(Object.assign({ loading: false }, newState));
+        });
+  }
+
+  createTimer() {
+    const {token} = this.state;
+
+    fetch('http://localhost:3001/', {
+      headers: {
+        Accept: 'application/json',
+      },
+      credentials: 'include',
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(res.status);
+        }
+      })
+      .then(json => {
+        const { id } = json;
+
+        history.replace(`/?id=${id}`);
+        this.setState({ id, timerToken: token });
+      });
+  }
+
+  updateTimer(id, number) {
+    let start = dayjs.utc();
+    let end = start.add(number, 's');
+
+    let data = {
+      id,
+      start: start.unix(),
+      end: end.unix(),
+    };
+
+    fetch('http://localhost:3001', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      mode: 'cors',
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error(res.status);
+        }
+      })
+      .then(json => {
+        console.log(json);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  timerInterval() {
+    return setInterval(() => {
+      let { end, number, interval } = this.state;
+      let start = dayjs.utc().unix();
+
+      let newNumber = Math.max(0, end - start);
+
+      if (newNumber !== number) {
+        let newState = { number: newNumber };
+
+        if (number <= 0) {
+          clearInterval(interval);
+          newState.interval = null;
+        }
+
+        this.setState(newState);
+      }
+    }, 100);
+  }
+
+  formatNumber(n) {
+    let date = dayjs.utc(0).add(n, 's');
+    return date.format('HH[h]mm[m]ss[s]');
+  }
+
+  createDisplay(n, focused) {
+    let formatted = this.formatNumber(n);
+    return formatted.split('').map((v, i) =>
+      v.match(/\d/) ? (
+        <Number key={i} focused={focused}>
+          {v}
+        </Number>
+      ) : (
+        <TimeUnit key={i} focused={focused} displayCursor={v === 's'}>
+          {v}
+        </TimeUnit>
+      )
+    );
+  }
+
+  render() {
+    let { id, number, loading, focused } = this.state;
+
+    return (
+      <Wrapper>
+        {loading ? (
+          <ClipLoader></ClipLoader>
+        ) : id !== null ? (
+          <div>
+            <TimerWrapper
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              tabIndex="0"
+              onKeyPress={this.handleKeyPress}
+            >
+              {this.createDisplay(number, focused)}
+            </TimerWrapper>
+            <Typography>Timer ID: {id}</Typography>
+          </div>
+        ) : (
+          <div>
+            <Button onClick={this.createTimer}>Create Timer</Button>
+            <CodeInput handleSubmit={this.handleCodeSubmit}></CodeInput>
+          </div>
+        )}
+      </Wrapper>
+    );
+  }
+}
+
+export default withCookies(Timer);
