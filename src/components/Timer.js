@@ -15,6 +15,8 @@ import Typography from './Typography';
 
 dayjs.extend(utc);
 
+const serverRoot = 'http://localhost:3001';
+
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -167,7 +169,7 @@ class Timer extends React.Component {
   }
 
   fetchTimer(id) {
-    fetch(`http://localhost:3001?id=${id}`, {
+    fetch(`${serverRoot}?id=${id}`, {
         headers: { Accept: 'application/json' },
       })
         .then(res => {
@@ -205,7 +207,7 @@ class Timer extends React.Component {
   createTimer() {
     const {token} = this.state;
 
-    fetch('http://localhost:3001/', {
+    fetch(`${serverRoot}/`, {
       headers: {
         Accept: 'application/json',
       },
@@ -236,7 +238,7 @@ class Timer extends React.Component {
       end: end.unix(),
     };
 
-    fetch('http://localhost:3001', {
+    fetch(`${serverRoot}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
