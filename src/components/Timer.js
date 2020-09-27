@@ -43,10 +43,6 @@ const Button = styled.button`
   padding: 8px 16px;
 `;
 
-const Centered = styled(Wrapper)`
-  text-align: center;
-`;
-
 const Number = styled(Typography)`
   font-size: 26px;
   color: ${props => (props.focused ? '#888' : 'black')};
@@ -109,7 +105,6 @@ class Timer extends React.Component {
 
   handleFocus() {
     const { token, timerToken, interval } = this.state;
-    prompt();
     if (token === timerToken) {
       clearInterval(interval);
 
