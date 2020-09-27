@@ -16,7 +16,7 @@ import Typography from './Typography';
 
 dayjs.extend(utc);
 
-const serverRoot = 'http://localhost:3001';
+const serverRoot = '/api.php';
 
 const Wrapper = styled.div`
   text-align: ${props => props.textAlign || 'left'};
