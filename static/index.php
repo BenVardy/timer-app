@@ -1,8 +1,6 @@
 <?php
     function writeToTimes($fname, $times) {
-        $f = fopen($fname, 'w');
-        fwrite($f, json_encode($times));
-        fclose($f);
+        file_put_contents($fname, json_encode($times));
     }
 
     // Temp for dev

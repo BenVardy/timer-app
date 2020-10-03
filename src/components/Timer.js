@@ -12,6 +12,7 @@ import { ClipLoader } from 'react-spinners';
 import QRCode from 'qrcode.react';
 
 import CodeInput from './CodeInput';
+import Layout from './Layout';
 import Typography from './Typography';
 
 dayjs.extend(utc);
@@ -22,14 +23,12 @@ const Wrapper = styled.div`
   text-align: ${props => props.textAlign || 'left'};
   margin: 16px auto;
   outline: none;
-  max-width: 50rem;
   position: relative;
 `;
 
 const TimerWrapper = styled.div`
   display: inline-block;
-  margin-right: 8px;
-  margin-bottom: 16px;
+  margin: 16px;
   text-align: left;
   vertical-align: top;
 `;
@@ -41,7 +40,18 @@ const TimeStampWrapper = styled(Wrapper)`
 `;
 
 const StylishQRCode = styled(QRCode)`
-  @media only screen and (max-width: 600px) {
+  display: block;
+  max-height: 100%;
+  max-width: 100%;
+
+  @media only screen and (max-width: 1150px) {
+    max-width: 50%;
+    max-height: 50%;
+    height: unset !important;
+    width: unset !important;
+  }
+
+  @media only screen and (max-width: 950px) {
     display: none;
   }
 `;
@@ -59,11 +69,11 @@ const Button = styled.button`
 `;
 
 const Number = styled(Typography)`
-  font-size: 48px;
+  font-size: 112px;
   color: ${props => (props.focused ? '#888' : 'black')};
 
-  @media only screen and (min-width: 600px) {
-    font-size: 64px;
+  @media only screen and (max-width: 950px) {
+    font-size: 48px;
   }
 `;
 
@@ -330,7 +340,7 @@ class Timer extends React.Component {
     let { id, number, loading, focused } = this.state;
 
     return (
-      <Wrapper textAlign="center">
+      <Layout>
         {loading ? (
           <ClipLoader></ClipLoader>
         ) : id !== null ? (
@@ -346,7 +356,7 @@ class Timer extends React.Component {
               </TimeStampWrapper>
               <Typography>Timer ID: {id}</Typography>
             </TimerWrapper>
-            <StylishQRCode value={`https://benvardy.co.uk?id=${id}`} />
+            <StylishQRCode size={512} value={`https://benvardy.co.uk?id=${id}`} />
           </>
         ) : (
           <Wrapper>
@@ -360,7 +370,7 @@ class Timer extends React.Component {
             </Wrapper>
           </Wrapper>
         )}
-      </Wrapper>
+      </Layout>
     );
   }
 }
