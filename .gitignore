@@ -24,3 +24,4 @@ yarn-error.log*
 
 # Times store
 static/times.json
+times.json

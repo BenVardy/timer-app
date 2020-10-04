@@ -1,7 +1,8 @@
 #!/bin/bash
 yarn build
 cp static/index.php build/api.php
-if [[ ! -e build/times.json ]]; then
-    touch build/times.json
-    chmod 666 build/times.json
+if [[ ! -e times.json ]]; then
+    touch times.json
+    chmod 666 times.json
+    ln times.json build/times.json
 fi
