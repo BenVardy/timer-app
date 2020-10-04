@@ -240,6 +240,8 @@ class Timer extends React.Component {
   createTimer() {
     const {token} = this.state;
 
+    this.setState({ loading: true });
+
     fetch(serverRoot, {
       headers: {
         Accept: 'application/json',
@@ -257,7 +259,7 @@ class Timer extends React.Component {
         const { id } = json;
 
         history.push(`/?id=${id}`);
-        this.setState({ id, timerToken: token });
+        this.setState({ id, loading: false, timerToken: token });
       });
   }
 
@@ -342,7 +344,9 @@ class Timer extends React.Component {
     return (
       <Layout>
         {loading ? (
-          <ClipLoader></ClipLoader>
+          <Wrapper textAlign="center">
+            <ClipLoader size={60}></ClipLoader>
+          </Wrapper>
         ) : id !== null ? (
           <>
             <TimerWrapper>
@@ -356,7 +360,7 @@ class Timer extends React.Component {
               </TimeStampWrapper>
               <Typography>Timer ID: {id}</Typography>
             </TimerWrapper>
-            <StylishQRCode size={512} value={`https://benvardy.co.uk?id=${id}`} />
+            <StylishQRCode size={512} level="Q" value={`https://benvardy.co.uk?id=${id}`} />
           </>
         ) : (
           <Wrapper>
