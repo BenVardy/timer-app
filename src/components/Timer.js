@@ -116,7 +116,7 @@ class Timer extends React.Component {
 
     this.createTimer = this.createTimer.bind(this);
 
-    this.handleFocus = this.handleFocus.bind(this);
+    this.handleClick = this.handleClick.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
 
@@ -132,7 +132,7 @@ class Timer extends React.Component {
     if (id) this.fetchTimer(id);
   }
 
-  handleFocus() {
+  handleClick() {
     const { token, timerToken, interval } = this.state;
     if (token === timerToken) {
       clearInterval(interval);
@@ -347,7 +347,7 @@ class Timer extends React.Component {
           <>
             <TimerWrapper>
               <TimeStampWrapper
-                onFocus={this.handleFocus}
+                onClick={this.handleClick}
                 onBlur={this.handleBlur}
                 tabIndex="0"
                 onKeyPress={this.handleKeyPress}
