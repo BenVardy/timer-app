@@ -356,7 +356,7 @@ class Timer extends React.Component {
               </TimeStampWrapper>
               <Typography>Timer ID: {id}</Typography>
             </TimerWrapper>
-            <StylishQRCode size={512} value={`https://benvardy.co.uk?id=${id}`} />
+            <StylishQRCode size={512} level="Q" value={`https://benvardy.co.uk?id=${id}`} />
           </>
         ) : (
           <Wrapper>
